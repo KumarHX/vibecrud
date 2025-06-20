@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 bandit detect-secrets
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Security scan with Bandit
+        run: |
+          bandit -r .
+
+      - name: Scan for secrets/PII with detect-secrets
+        run: |
+          detect-secrets scan --all-files > .secrets.baseline
+          detect-secrets audit .secrets.baseline || true
+
+      # Placeholder for HIPAA/PII-specific scanning (no open-source tool guarantees HIPAA compliance)
+      - name: Note on HIPAA/PII
+        run: |
+          echo "No open-source scanner guarantees HIPAA compliance. Please review code and data handling policies manually."
