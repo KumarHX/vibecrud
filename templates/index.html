@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Patients</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="glass-container">
+        <h2>All Patients</h2>
+        <a href="{{ url_for('add_patient') }}" class="button">Add Patient</a>
+        <ul>
+        {% for p in patients %}
+          <li><strong>{{ p[0] }}</strong><br>Weight: {{ p[1] }} | Height: {{ p[2] }} | Age: {{ p[3] }}<br>Medications: {{ p[4] }}</li>
+        {% else %}
+          <li>No patients found.</li>
+        {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
