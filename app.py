@@ -5,6 +5,7 @@ import os
 app = Flask(__name__)
 DB_FILE = 'patients.db'
 
+
 def init_db():
     if not os.path.exists(DB_FILE):
         conn = sqlite3.connect(DB_FILE)
@@ -22,6 +23,7 @@ def init_db():
         conn.commit()
         conn.close()
 
+
 @app.route('/')
 def index():
     conn = sqlite3.connect(DB_FILE)
@@ -30,6 +32,7 @@ def index():
     patients = c.fetchall()
     conn.close()
     return render_template('index.html', patients=patients)
+
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_patient():
@@ -41,13 +44,16 @@ def add_patient():
         medications = request.form['medications']
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
-        c.execute('INSERT INTO patients (name, weight, height, age, medications) VALUES (?, ?, ?, ?, ?)',
-                  (name, weight, height, age, medications))
+        c.execute(
+            'INSERT INTO patients (name, weight, height, age, medications) '
+            'VALUES (?, ?, ?, ?, ?)',
+            (name, weight, height, age, medications))
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
     return render_template('add_patient.html')
 
+
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    app.run(debug=False)
